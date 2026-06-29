@@ -1,31 +1,56 @@
 /* ===== Vahan site animations — additive, non-destructive ===== */
 @media (prefers-reduced-motion: no-preference) {
 
-  /* Hover zoom on cards / boxes */
-  .feat-card,.news-card,.pl-card,.tcard,.video-card,.partner-img-card,
-  .powering-box,.news-box,.tech,.acc-item,.feat-img,[data-anim-card]{
-    transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease;
+  /* ---------- Hover lift/zoom: cards, media, buttons ---------- */
+  .feat-card,.news-card,.pl-card,.tcard,.video-card,.partner-img-card,.powering-box,.news-box,
+  .tech,.tech-img,.acc-item,.feat-img,.stat,.badge,.zlogo,.case-photo,.case-photo img,
+  .btn,.btn-white,.btn-orange,.btn-login,.btn-primary,[data-anim-card],[data-anim-hover]{
+    transition: transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease, filter .3s ease;
   }
-  .feat-card:hover,.news-card:hover,.pl-card:hover,.tcard:hover,.video-card:hover,
-  .partner-img-card:hover,.powering-box:hover,.news-box:hover,.tech:hover,
-  .acc-item:hover,.feat-img:hover,[data-anim-card]:hover{
+  .feat-card:hover,.news-card:hover,.pl-card:hover,.tcard:hover,.video-card:hover,.partner-img-card:hover,
+  .powering-box:hover,.news-box:hover,.tech:hover,.acc-item:hover,.feat-img:hover,.stat:hover,.badge:hover,
+  [data-anim-card]:hover,[data-anim-hover]:hover{
     transform: scale(1.03);
     box-shadow: 0 18px 40px rgba(0,0,0,.16);
   }
-
-  /* Scroll reveal (applied only by JS) */
-  [data-anim-reveal]{
-    opacity:0; transform: translateY(24px);
-    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);
+  .btn:hover,.btn-white:hover,.btn-orange:hover,.btn-login:hover,.btn-primary:hover{
+    transform: translateY(-2px) scale(1.03);
   }
+  .zlogo:hover,.case-photo img:hover,.tech-img:hover{ transform: scale(1.04); }
+
+  /* ---------- Scroll reveal (applied by JS only) ---------- */
+  [data-anim-reveal]{ opacity:0; transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
   [data-anim-reveal].is-in{ opacity:1; transform:none; }
 
-  /* Logo marquee */
+  /* ---------- Waves: gentle continuous drift ---------- */
+  [data-anim-wave]{ will-change: transform;
+    animation: anim-wave-drift var(--anim-wave-dur, 24s) ease-in-out infinite alternate; }
+  @keyframes anim-wave-drift{
+    from{ transform: translate3d(0,0,0); }
+    to  { transform: translate3d(-16px,5px,0); }
+  }
+
+  /* ---------- Logo strip marquee (slow, matched to waves) ---------- */
   .anim-marquee{ overflow:hidden; }
   .anim-marquee-track{ display:flex; width:max-content; animation: anim-marquee-scroll linear infinite; }
   .anim-marquee-track > *{ flex:0 0 auto; }
   .anim-marquee:hover .anim-marquee-track{ animation-play-state: paused; }
-  @keyframes anim-marquee-scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+  @keyframes anim-marquee-scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
-  [data-anim-wave]{ will-change: transform; }
+  /* ---------- Sticky floating-pill navbar ---------- */
+  .anim-nav-stuck{
+    position: fixed !important;
+    top: 14px !important; left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important; width: auto !important; max-width: 96vw;
+    z-index: 9999 !important;
+    background: var(--anim-pill-bg, rgba(20,20,28,.72)) !important;
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border-radius: 999px !important;
+    padding: 10px 20px !important;
+    box-shadow: 0 12px 34px rgba(0,0,0,.20) !important;
+    animation: anim-nav-drop .35s cubic-bezier(.2,.7,.2,1);
+  }
+  @keyframes anim-nav-drop{ from{opacity:0; transform:translate(-50%,-16px);} to{opacity:1; transform:translate(-50%,0);} }
 }
