@@ -1,0 +1,49 @@
+/* Supplemental styles that drive the re-added interactions.
+   These override the captured Tailwind state classes via helper classes
+   toggled by interactions.js. */
+
+/* ---- panel fade (tab switch + lightbox) ---- */
+@keyframes vFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.v-fade { animation: vFadeIn 0.4s ease-out; }
+
+/* ---- One Partner tabs ----
+   !important so a helper class reliably overrides the captured Tailwind
+   state classes that remain baked onto each button. */
+.v-tab { cursor: pointer; font-weight: 400 !important; color: rgba(43,24,10,0.7) !important; border-bottom: 2px solid rgba(43,24,10,0.34) !important; }
+.v-tab:hover { color: #2B180A !important; }
+.v-tab.v-tab--active { font-weight: 600 !important; color: #2B180A !important; border-bottom-color: #F97316 !important; }
+
+/* ---- Features accordion ---- */
+.v-feat { cursor: pointer; background: transparent !important; box-shadow: none !important; transition: background .25s ease, box-shadow .25s ease, min-height .3s ease; }
+.v-feat:hover { background: rgba(255,255,255,0.4) !important; }
+.v-feat-title { color: #94877C !important; transition: color .25s ease; }
+.v-feat-icon { background: #EFE7DD !important; transition: background .25s ease; }
+.v-feat-icon svg { color: #6C503C !important; transition: color .25s ease; }
+/* collapsed description */
+.v-feat-desc { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .3s ease-out, opacity .3s ease-out, margin-top .3s ease-out; margin-top: 0; }
+
+.v-feat.v-feat--open { background: #fff !important; box-shadow: 0 18px 40px rgba(43,24,10,0.08) !important; }
+.v-feat.v-feat--open .v-feat-title { color: #2B180A !important; }
+.v-feat.v-feat--open .v-feat-icon { background: radial-gradient(68.56% 189.77% at 50% 121.59%, #FF9C38 0%, #F97619 100%) !important; }
+.v-feat.v-feat--open .v-feat-icon svg { color: #FFFFFF !important; }
+.v-feat.v-feat--open .v-feat-desc { grid-template-rows: 1fr; opacity: 1; margin-top: 12px; }
+@media (min-width: 768px) {
+  .v-feat { min-height: 128px; }
+  .v-feat.v-feat--open { min-height: 203.4px; }
+}
+
+/* ---- Mobile menu ---- */
+.v-mobile-panel { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .3s ease, opacity .3s ease; }
+.v-mobile-panel.v-mobile-open { max-height: 640px; opacity: 1; }
+.v-mobile-panel .v-sub-open { max-height: 260px !important; opacity: 1 !important; }
+
+/* ---- Video lightbox ---- */
+.v-lightbox { position: fixed; inset: 0; z-index: 60; display: none; place-items: center; padding: 16px; background: rgba(0,0,0,0.8); }
+.v-lightbox.v-lightbox-open { display: grid; animation: vFadeIn 0.2s ease-out; }
+.v-lightbox-inner { position: relative; width: 100%; max-width: 56rem; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 25px 60px rgba(0,0,0,0.5); }
+.v-lightbox-inner video { width: 100%; aspect-ratio: 16/9; display: block; }
+.v-lightbox-close { position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; border: none; border-radius: 999px; background: rgba(0,0,0,0.6); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+.v-lightbox-close:hover { background: rgba(0,0,0,0.85); }
+
+/* ---- Header scroll border (cosmetic parity) ---- */
+header.v-scrolled { border-bottom: 1px solid rgba(43,24,10,0.08); }

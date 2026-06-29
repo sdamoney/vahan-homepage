@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__figma__get_metadata",
+      "mcp__figma__get_variable_defs",
+      "mcp__figma__get_screenshot",
+      "Bash(curl -s -o screenshot.png \"https://www.figma.com/api/mcp/asset/41a107d4-8314-446c-b3fc-bb7f36c6711e\")",
+      "mcp__figma__get_design_context"
+    ]
+  }
+}

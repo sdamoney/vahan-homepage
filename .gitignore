@@ -1,40 +1,14 @@
-# Logs
-logs
+# Dependencies (the React source kept under Site2/ & Site3/ vahan-homepage/)
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+.output/
+.vercel/
+.nitro/
+.tanstack/
+
+# Logs / OS junk
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-.output
-.vinxi
-.tanstack/**
-.nitro
-*.local
-
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
-
-# Vercel
-.vercel
-
-# env
-.env
-.env.*
-!.env.example
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
