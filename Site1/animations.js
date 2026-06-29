@@ -16,6 +16,7 @@
     try { initMarquee(); }    catch(e){}
     try { initGenericCards(); } catch(e){}
     try { initStickyNav(); }  catch(e){}
+    try { initCarousels(); }  catch(e){}
   });
 
   /* ---------- Scroll reveal ---------- */
@@ -153,5 +154,97 @@
       if (n.nodeType === 3 && n.textContent.trim()){ n.textContent = "Get Started "; done = true; break; }
     }
     if (!done) cta.insertBefore(document.createTextNode("Get Started "), cta.firstChild);
+  }
+
+  /* ---------- One-at-a-time carousel (testimonials) ---------- */
+  function initCarousels(){
+    var cards = uniq(arr(document.querySelectorAll(".tcard")));
+    if (cards.length < 2){
+      cards = uniq(arr(document.querySelectorAll('img[src*="avatar" i]'))
+        .map(function(i){ return i.closest(".abs"); }).filter(Boolean));
+    }
+    if (cards.length < 2){
+      cards = uniq(arr(document.querySelectorAll('img[src*="testi" i]')));
+    }
+    if (cards.length < 2) return;
+    var first = cards[0];
+    if (getComputedStyle(first).position === "absolute") buildAbsoluteCarousel(cards);
+    else buildFlowCarousel(cards);
+  }
+
+  function mkArrow(dir){
+    var b = document.createElement("button");
+    b.className = "anim-arrow anim-arrow-" + dir;
+    b.type = "button";
+    b.setAttribute("aria-label", dir === "prev" ? "Previous" : "Next");
+    b.innerHTML = dir === "prev"
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+    return b;
+  }
+
+  function wireArrows(host, track, n, slideW){
+    var idx = 0;
+    var prev = mkArrow("prev"), next = mkArrow("next");
+    function go(i){ idx = (i % n + n) % n; track.style.transform = "translateX(-" + (idx * slideW) + "px)"; }
+    prev.addEventListener("click", function(){ go(idx - 1); });
+    next.addEventListener("click", function(){ go(idx + 1); });
+    host.appendChild(prev); host.appendChild(next);
+    go(0);
+  }
+
+  function buildAbsoluteCarousel(cards){
+    var op = cards[0].offsetParent || cards[0].parentNode;
+    var minL = Infinity, minT = Infinity, maxR = -Infinity, maxB = -Infinity;
+    cards.forEach(function(c){
+      var l = c.offsetLeft, t = c.offsetTop, w = c.offsetWidth, h = c.offsetHeight;
+      minL = Math.min(minL, l); minT = Math.min(minT, t);
+      maxR = Math.max(maxR, l + w); maxB = Math.max(maxB, t + h);
+    });
+    var boxW = maxR - minL, boxH = maxB - minT;
+    if (!(boxW > 0) || !(boxH > 0)) return;
+    var vp = document.createElement("div");
+    vp.className = "anim-carousel";
+    vp.style.position = "absolute";
+    vp.style.left = minL + "px"; vp.style.top = minT + "px";
+    vp.style.width = boxW + "px"; vp.style.height = boxH + "px";
+    var view = document.createElement("div"); view.className = "anim-carousel-viewport";
+    var track = document.createElement("div"); track.className = "anim-carousel-track";
+    cards.forEach(function(c){
+      var slide = document.createElement("div");
+      slide.style.width = boxW + "px"; slide.style.height = "100%";
+      slide.style.display = "flex"; slide.style.alignItems = "center"; slide.style.justifyContent = "center";
+      c.style.position = "static";
+      ["left","top","right","bottom"].forEach(function(p){ c.style[p] = ""; });
+      c.style.margin = "0"; c.style.transform = ""; c.style.opacity = "";
+      c.removeAttribute("data-anim-reveal"); c.classList.add("is-in");
+      slide.appendChild(c);
+      track.appendChild(slide);
+    });
+    view.appendChild(track); vp.appendChild(view);
+    op.appendChild(vp);
+    wireArrows(vp, track, cards.length, boxW);
+  }
+
+  function buildFlowCarousel(cards){
+    var container = cards[0].parentNode;
+    if (!container) return;
+    var boxW = container.getBoundingClientRect().width;
+    if (!(boxW > 0)) return;
+    container.classList.add("anim-carousel");
+    container.style.position = "relative";
+    container.style.overflow = "hidden";
+    var track = document.createElement("div"); track.className = "anim-carousel-track";
+    cards.forEach(function(c){
+      var slide = document.createElement("div");
+      slide.style.flex = "0 0 " + boxW + "px";
+      slide.style.display = "flex"; slide.style.alignItems = "center"; slide.style.justifyContent = "center";
+      c.style.opacity = "";
+      c.removeAttribute("data-anim-reveal"); c.classList.add("is-in");
+      slide.appendChild(c);
+      track.appendChild(slide);
+    });
+    container.appendChild(track);
+    wireArrows(container, track, cards.length, boxW);
   }
 })();
