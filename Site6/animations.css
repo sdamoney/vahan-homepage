@@ -1,7 +1,7 @@
 /* ===== Vahan site animations — additive, non-destructive ===== */
 @media (prefers-reduced-motion: no-preference) {
 
-  /* ---------- Hover lift/zoom: cards, media, buttons ---------- */
+  /* ---------- Hover lift/zoom ---------- */
   .feat-card,.news-card,.pl-card,.tcard,.video-card,.partner-img-card,.powering-box,.news-box,
   .tech,.tech-img,.acc-item,.feat-img,.stat,.badge,.zlogo,.case-photo,.case-photo img,
   .btn,.btn-white,.btn-orange,.btn-login,.btn-primary,[data-anim-card],[data-anim-hover]{
@@ -9,29 +9,24 @@
   }
   .feat-card:hover,.news-card:hover,.pl-card:hover,.tcard:hover,.video-card:hover,.partner-img-card:hover,
   .powering-box:hover,.news-box:hover,.tech:hover,.acc-item:hover,.feat-img:hover,.stat:hover,.badge:hover,
-  [data-anim-card]:hover,[data-anim-hover]:hover{
-    transform: scale(1.03);
-    box-shadow: 0 18px 40px rgba(0,0,0,.16);
-  }
-  .btn:hover,.btn-white:hover,.btn-orange:hover,.btn-login:hover,.btn-primary:hover{
-    transform: translateY(-2px) scale(1.03);
-  }
+  [data-anim-card]:hover,[data-anim-hover]:hover{ transform: scale(1.03); box-shadow: 0 18px 40px rgba(0,0,0,.16); }
+  .btn:hover,.btn-white:hover,.btn-orange:hover,.btn-login:hover,.btn-primary:hover{ transform: translateY(-2px) scale(1.03); }
   .zlogo:hover,.case-photo img:hover,.tech-img:hover{ transform: scale(1.04); }
 
-  /* ---------- Scroll reveal (applied by JS only) ---------- */
-  [data-anim-reveal]{ opacity:0; transform: translateY(24px);
-    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  /* ---------- Scroll reveal (JS-applied) ---------- */
+  [data-anim-reveal]{ opacity:0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
   [data-anim-reveal].is-in{ opacity:1; transform:none; }
 
-  /* ---------- Waves: gentle continuous drift ---------- */
-  [data-anim-wave]{ will-change: transform;
-    animation: anim-wave-drift var(--anim-wave-dur, 24s) ease-in-out infinite alternate; }
+  /* ---------- Waves: gentle, visible, continuous drift (with overscan so edges never gap) ---------- */
+  /* uses independent translate/scale props so existing transforms (e.g. centering) are preserved */
+  [data-anim-wave]{ will-change: translate, scale; animation: anim-wave-drift var(--anim-wave-dur, 20s) ease-in-out infinite; }
   @keyframes anim-wave-drift{
-    from{ transform: translate3d(0,0,0); }
-    to  { transform: translate3d(-16px,5px,0); }
+    0%   { translate: -1.4% 0;   scale: 1.06; }
+    50%  { translate:  1.4% -7px; scale: 1.06; }
+    100% { translate: -1.4% 0;   scale: 1.06; }
   }
 
-  /* ---------- Logo strip marquee (slow, matched to waves) ---------- */
+  /* ---------- Logo strip marquee (slow) ---------- */
   .anim-marquee{ overflow:hidden; }
   .anim-marquee-track{ display:flex; width:max-content; animation: anim-marquee-scroll linear infinite; }
   .anim-marquee-track > *{ flex:0 0 auto; }
@@ -40,27 +35,24 @@
 
   /* ---------- Sticky floating-pill navbar ---------- */
   .anim-nav-stuck{
-    position: fixed !important;
-    top: 14px !important; left: 50% !important;
-    transform: translateX(-50%) !important;
-    margin: 0 !important; width: auto !important; max-width: 96vw;
-    z-index: 9999 !important;
-    background: var(--anim-pill-bg, rgba(20,20,28,.72)) !important;
+    position: fixed !important; top: 14px !important; left: 50% !important;
+    transform: translateX(-50%) !important; margin: 0 !important; width: auto !important; max-width: 96vw;
+    z-index: 9999 !important; background: var(--anim-pill-bg, rgba(20,20,28,.74)) !important;
     -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-    border-radius: 999px !important;
-    padding: 10px 20px !important;
-    box-shadow: 0 12px 34px rgba(0,0,0,.20) !important;
-    animation: anim-nav-drop .35s cubic-bezier(.2,.7,.2,1);
+    border-radius: 999px !important; padding: 10px 20px !important;
+    box-shadow: 0 12px 34px rgba(0,0,0,.20) !important; animation: anim-nav-drop .35s cubic-bezier(.2,.7,.2,1);
   }
   @keyframes anim-nav-drop{ from{opacity:0; transform:translate(-50%,-16px);} to{opacity:1; transform:translate(-50%,0);} }
 
-  /* ---------- One-at-a-time carousel (testimonials) ---------- */
+  /* ---------- Peek carousel (testimonials) ---------- */
   .anim-carousel{ position:relative; }
-  .anim-carousel-viewport{ overflow:hidden; width:100%; height:100%; }
-  .anim-carousel-track{ display:flex; align-items:center; height:100%;
-    transition: transform .5s cubic-bezier(.2,.7,.2,1); }
-  .anim-carousel-track > *{ flex:0 0 auto; }
-  .anim-carousel .tcard, .anim-carousel img{ opacity:1 !important; }
+  .anim-carousel-track{ display:flex; align-items:center; height:100%; width:max-content;
+    transition: transform .5s cubic-bezier(.2,.7,.2,1); will-change: transform; }
+  .anim-carousel-track > *{ transition: transform .5s cubic-bezier(.2,.7,.2,1), opacity .5s ease;
+    transform: scale(.78); opacity:.42; }
+  .anim-carousel-track > .is-active{ transform: scale(1); opacity:1; z-index:2; }
+
+  /* ---------- Arrows ---------- */
   .anim-arrow{ position:absolute; top:50%; transform:translateY(-50%);
     width:48px; height:48px; border-radius:50%; border:none; cursor:pointer;
     background:#fff; color:#1E1E1E; box-shadow:0 6px 18px rgba(0,0,0,.18);
@@ -68,7 +60,6 @@
     transition: transform .2s ease, box-shadow .2s ease; }
   .anim-arrow:hover{ transform:translateY(-50%) scale(1.1); box-shadow:0 8px 24px rgba(0,0,0,.26); }
   .anim-arrow svg{ width:22px; height:22px; }
-  .anim-arrow-prev{ left:8px; }
-  .anim-arrow-next{ right:8px; }
-
+  .anim-arrow-prev{ left:10px; }
+  .anim-arrow-next{ right:10px; }
 }
