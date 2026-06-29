@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vahan — Site Previews</title>
+  <style>
+    :root { --bg:#0f1115; --card:#1a1d24; --fg:#f5f6f8; --muted:#9aa3b2; --accent:#6c8cff; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--fg); min-height:100vh; }
+    .wrap { max-width:880px; margin:0 auto; padding:64px 24px; }
+    h1 { font-size:32px; margin:0 0 8px; letter-spacing:-0.02em; }
+    p.sub { color:var(--muted); margin:0 0 40px; font-size:16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+    a.card { display:block; background:var(--card); border:1px solid #262a33; border-radius:14px; padding:22px; text-decoration:none; color:var(--fg); transition:border-color .15s, transform .15s; }
+    a.card:hover { border-color:var(--accent); transform:translateY(-2px); }
+    a.card .n { font-size:13px; color:var(--accent); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+    a.card .t { font-size:16px; margin-top:6px; line-height:1.35; }
+    footer { margin-top:48px; color:var(--muted); font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Vahan — Site Previews</h1>
+    <p class="sub">Six static homepage variants. Click any to view.</p>
+    <div class="grid">
+      <a class="card" href="/Site1/"><div class="n">Site 1</div><div class="t">AI Recruiter for India's Massive Blue Collar Workforce</div></a>
+      <a class="card" href="/Site2/"><div class="n">Site 2</div><div class="t">AI Recruiter for India's Blue-Collar Workforce</div></a>
+      <a class="card" href="/Site3/"><div class="n">Site 3</div><div class="t">AI Recruiter for India's Blue-Collar Workforce</div></a>
+      <a class="card" href="/Site4/"><div class="n">Site 4</div><div class="t">AI Recruiter for India's Massive Blue Collar Workforce</div></a>
+      <a class="card" href="/Site5/"><div class="n">Site 5</div><div class="t">The AI Recruiter Your Company Needs</div></a>
+      <a class="card" href="/Site6/"><div class="n">Site 6</div><div class="t">The AI Recruiter Your Company Needs</div></a>
+    </div>
+    <footer>Vahan &middot; static preview index</footer>
+  </div>
+</body>
+</html>
