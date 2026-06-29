@@ -55,12 +55,13 @@
     requestAnimationFrame(step);
   }
 
-  /* ---------- Waves ---------- */
+  /* ---------- Waves (animation forced inline as a guarantee) ---------- */
   function initWaves(){
     var sel = '.bg-powering-wave img,.bg-wave2 img,.wave-divider,img[src*="wave" i],img[src*="waves" i],img[src*="hero-wave" i]';
     uniq(arr(document.querySelectorAll(sel))).forEach(function(n, i){
       n.setAttribute("data-anim-wave", "");
-      n.style.setProperty("--anim-wave-dur", (18 + (i % 4) * 3) + "s");
+      var dur = 14 + (i % 4) * 3;  /* 14-23s */
+      n.style.animation = "anim-wave-drift " + dur + "s ease-in-out infinite";
     });
   }
 
@@ -158,7 +159,7 @@
   function buildPeek(cards){
     var first = cards[0], isAbs = getComputedStyle(first).position === "absolute";
     var unit = Math.max.apply(null, cards.map(function(c){ return c.offsetWidth; })) + 48;
-    var boxW, boxH, viewport;
+    var wrapper, viewport, boxW, boxH;
     if (isAbs){
       var op = first.offsetParent || first.parentNode;
       var minL=Infinity,minT=Infinity,maxR=-Infinity,maxB=-Infinity;
@@ -166,36 +167,62 @@
         minL=Math.min(minL,l);minT=Math.min(minT,t);maxR=Math.max(maxR,l+w);maxB=Math.max(maxB,t+h); });
       boxW=maxR-minL; boxH=maxB-minT;
       if (!(boxW>0)||!(boxH>0)) return;
-      viewport=document.createElement("div"); viewport.className="anim-carousel";
-      viewport.style.cssText="position:absolute;left:"+minL+"px;top:"+minT+"px;width:"+boxW+"px;height:"+boxH+"px;overflow:hidden;";
-      op.appendChild(viewport);
+      wrapper=document.createElement("div"); wrapper.className="anim-carousel";
+      wrapper.style.cssText="position:absolute;left:"+minL+"px;top:"+minT+"px;width:"+boxW+"px;height:"+boxH+"px;overflow:visible;";
+      op.appendChild(wrapper);
+      viewport=document.createElement("div");
+      viewport.style.cssText="position:relative;width:100%;height:100%;overflow:hidden;";
+      wrapper.appendChild(viewport);
     } else {
-      viewport=first.parentNode; if (!viewport) return;
-      var rr=viewport.getBoundingClientRect(); boxW=rr.width; boxH=rr.height;
+      wrapper = first.parentNode; if (!wrapper) return;
+      var rr=wrapper.getBoundingClientRect(); boxW=rr.width; boxH=rr.height;
       if (!(boxW>0)) return;
-      viewport.classList.add("anim-carousel");
-      viewport.style.position="relative"; viewport.style.overflow="hidden";
+      wrapper.classList.add("anim-carousel");
+      wrapper.style.position="relative"; wrapper.style.overflow="visible";
+      viewport=document.createElement("div");
+      viewport.style.cssText="position:relative;width:100%;overflow:hidden;";
+      wrapper.appendChild(viewport);
     }
-    var track=document.createElement("div"); track.className="anim-carousel-track";
-    cards.forEach(function(c){
+
+    function makeRealSlide(card){
       var slide=document.createElement("div");
       slide.style.cssText="flex:0 0 "+unit+"px;height:"+(isAbs?"100%":"auto")+";display:flex;align-items:center;justify-content:center;";
-      c.style.position="static"; ["left","top","right","bottom"].forEach(function(p){ c.style[p]=""; });
-      c.style.margin="0"; c.style.transform=""; c.style.setProperty("opacity","1","important");
-      c.removeAttribute("data-anim-reveal"); c.classList.add("is-in");
-      slide.appendChild(c); track.appendChild(slide);
-    });
+      card.style.position="static"; ["left","top","right","bottom"].forEach(function(p){ card.style[p]=""; });
+      card.style.margin="0"; card.style.transform=""; card.style.setProperty("opacity","1","important");
+      card.removeAttribute("data-anim-reveal"); card.classList.add("is-in");
+      slide.appendChild(card); return slide;
+    }
+    var realSlides = cards.map(makeRealSlide);
+    function cloneSet(){ return realSlides.map(function(s){ var cl=s.cloneNode(true); if(cl.firstChild) cl.firstChild.setAttribute("aria-hidden","true"); return cl; }); }
+    var track=document.createElement("div"); track.className="anim-carousel-track";
+    cloneSet().forEach(function(s){ track.appendChild(s); });   /* before */
+    realSlides.forEach(function(s){ track.appendChild(s); });   /* real   */
+    cloneSet().forEach(function(s){ track.appendChild(s); });   /* after  */
     viewport.appendChild(track);
-    var slides=arr(track.children), n=slides.length, idx=0;
-    function center(i){ idx=(i%n+n)%n; track.style.transform="translateX("+(boxW/2 - (idx*unit + unit/2))+"px)";
-      slides.forEach(function(s,j){ s.classList.toggle("is-active", j===idx); }); }
+
+    var slides = arr(track.children), N = cards.length, idx = N;  /* start on first real */
+    function place(animate){
+      track.style.transition = animate ? "" : "none";
+      track.style.transform = "translateX(" + (boxW/2 - (idx*unit + unit/2)) + "px)";
+      if (!animate){ void track.getBoundingClientRect(); track.style.transition = ""; }
+      slides.forEach(function(s,j){ s.classList.toggle("is-active", j===idx); });
+    }
+    function normalize(){ if (idx >= 2*N){ idx -= N; place(false); } else if (idx < N){ idx += N; place(false); } }
+    track.addEventListener("transitionend", function(e){ if (e.target===track && e.propertyName==="transform") normalize(); });
+    function go(d){ idx += d; place(true); }
+
     var prev=mkArrow("prev"), next=mkArrow("next");
-    prev.addEventListener("click", function(){ center(idx-1); });
-    next.addEventListener("click", function(){ center(idx+1); });
-    viewport.appendChild(prev); viewport.appendChild(next);
-    center(Math.floor(n/2));
+    prev.addEventListener("click", function(){ go(-1); restart(); });
+    next.addEventListener("click", function(){ go(1); restart(); });
+    wrapper.appendChild(prev); wrapper.appendChild(next);
+
+    var timer; function restart(){ clearInterval(timer); timer=setInterval(function(){ go(1); }, 4200); }
+    wrapper.addEventListener("mouseenter", function(){ clearInterval(timer); });
+    wrapper.addEventListener("mouseleave", restart);
+    place(false); restart();
   }
 
+  /* ---------- Case-study arrows (outside the card; loops if >1 case) ---------- */
   function findCaseCard(node){
     var el=node;
     for (var i=0;i<6 && el && el!==document.body; i++){
@@ -216,19 +243,16 @@
   }
   function addCaseArrows(card){
     if (card.__caseArrows) return; card.__caseArrows = true;
-    var isAbs = getComputedStyle(card).position === "absolute";
     var prev=mkArrow("prev"), next=mkArrow("next");
-    if (isAbs){
+    if (getComputedStyle(card).position === "absolute"){
       var op=card.offsetParent||card.parentNode;
       var l=card.offsetLeft,t=card.offsetTop,w=card.offsetWidth,h=card.offsetHeight;
       [prev,next].forEach(function(b){ b.style.position="absolute"; b.style.top=(t+h/2)+"px"; b.style.transform="translateY(-50%)"; b.style.right="auto"; op.appendChild(b); });
-      prev.style.left=(l+10)+"px"; next.style.left=(l+w-58)+"px";
+      prev.style.left=(l-58)+"px"; next.style.left=(l+w+10)+"px";
     } else {
       if (getComputedStyle(card).position==="static") card.style.position="relative";
       card.appendChild(prev); card.appendChild(next);
     }
-    /* single case study: arrows present for parity; wire to any sibling case cards if added later */
-    var group = uniq(arr(document.querySelectorAll(".case")));
     prev.addEventListener("click", function(){}); next.addEventListener("click", function(){});
   }
 })();

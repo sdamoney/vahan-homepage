@@ -18,12 +18,13 @@
   [data-anim-reveal].is-in{ opacity:1; transform:none; }
 
   /* ---------- Waves: gentle, visible, continuous drift (with overscan so edges never gap) ---------- */
-  /* uses independent translate/scale props so existing transforms (e.g. centering) are preserved */
-  [data-anim-wave]{ will-change: translate, scale; animation: anim-wave-drift var(--anim-wave-dur, 20s) ease-in-out infinite; }
+  /* independent translate/scale props compose with existing transforms (e.g. centering).
+     Vertical bob + scale 'breathing' so horizontal wave patterns read as moving. */
+  [data-anim-wave]{ will-change: translate, scale; }
   @keyframes anim-wave-drift{
-    0%   { translate: -1.4% 0;   scale: 1.06; }
-    50%  { translate:  1.4% -7px; scale: 1.06; }
-    100% { translate: -1.4% 0;   scale: 1.06; }
+    0%   { translate: -1% 0;     scale: 1.05; }
+    50%  { translate:  1% 13px;  scale: 1.085; }
+    100% { translate: -1% 0;     scale: 1.05; }
   }
 
   /* ---------- Logo strip marquee (slow) ---------- */
@@ -60,6 +61,6 @@
     transition: transform .2s ease, box-shadow .2s ease; }
   .anim-arrow:hover{ transform:translateY(-50%) scale(1.1); box-shadow:0 8px 24px rgba(0,0,0,.26); }
   .anim-arrow svg{ width:22px; height:22px; }
-  .anim-arrow-prev{ left:10px; }
-  .anim-arrow-next{ right:10px; }
+  .anim-arrow-prev{ left:-58px; }
+  .anim-arrow-next{ right:-58px; }
 }
