@@ -1,0 +1,31 @@
+/* ===== Vahan site animations — additive, non-destructive ===== */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* Hover zoom on cards / boxes */
+  .feat-card,.news-card,.pl-card,.tcard,.video-card,.partner-img-card,
+  .powering-box,.news-box,.tech,.acc-item,.feat-img,[data-anim-card]{
+    transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease;
+  }
+  .feat-card:hover,.news-card:hover,.pl-card:hover,.tcard:hover,.video-card:hover,
+  .partner-img-card:hover,.powering-box:hover,.news-box:hover,.tech:hover,
+  .acc-item:hover,.feat-img:hover,[data-anim-card]:hover{
+    transform: scale(1.03);
+    box-shadow: 0 18px 40px rgba(0,0,0,.16);
+  }
+
+  /* Scroll reveal (applied only by JS) */
+  [data-anim-reveal]{
+    opacity:0; transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+  [data-anim-reveal].is-in{ opacity:1; transform:none; }
+
+  /* Logo marquee */
+  .anim-marquee{ overflow:hidden; }
+  .anim-marquee-track{ display:flex; width:max-content; animation: anim-marquee-scroll linear infinite; }
+  .anim-marquee-track > *{ flex:0 0 auto; }
+  .anim-marquee:hover .anim-marquee-track{ animation-play-state: paused; }
+  @keyframes anim-marquee-scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+  [data-anim-wave]{ will-change: transform; }
+}
